@@ -116,17 +116,17 @@ public class Order {
         return false;
     }
 
-    // --- Private Методи (Внутрішня логіка) ---
 
     /**
      * Встановлює тип сесії.
      * (High Cohesion)
      */
-    private void setSessionType(String type) {
+    public void setSessionType(String type) {
         // У реальній логіці тут би зберігався об'єкт SessionType
         // this.sessionType = ...;
         System.out.println("Order: Session type set to '" + type + "'");
     }
+    // --- Private Методи (Внутрішня логіка) ---
 
     /**
      * Встановлює дату і час.
