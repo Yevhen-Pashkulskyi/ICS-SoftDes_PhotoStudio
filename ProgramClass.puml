@@ -1,0 +1,93 @@
+@startuml
+class com.photostudio.app.App {
++ {static} void main(String[])
+}
+
+class com.photostudio.model.SessionType {
+- String id
+- String name
+- double basePrice
++ double getBasePrice()
++ {static} List<SessionType> getAvailableSessionTypes()
++ String getName()
+}
+
+
+class com.photostudio.model.Order {
+- String id
+- Date date
+- Time time
+- double estimatedCost
+- SessionType sessionType
+- Schedule scheduleSlot
+- PhotoDetails details
+- CostCalculator costCalculator
+- OrderCollection orderCollection
++ boolean isSessionTypeAvailable(String)
++ boolean isSlotAvailable(Date,Time)
++ double getCost(int,String)
++ boolean finalizeOrder()
+- void setSessionType(String)
+- void setDateTime(Date,Time)
+- PhotoDetails createPhotoDetails(int,String)
+- void setEstimatedCost(double)
++ String getId()
+}
+
+
+class com.photostudio.model.Photographer {
+- String id
+- String name
+- List<Date> availability
++ List<Date> getPhotographerAvailability()
++ String getName()
+}
+
+
+class com.photostudio.model.OrderCollection {
+- List<Order> ordersList
++ void saveOrder(Order)
+}
+
+
+class com.photostudio.model.Schedule {
+- Date date
+- Time timeSlot
+- boolean isAvailable
+- Photographer photographer
++ boolean checkAvailability(Date,Time)
++ boolean reserveSlot()
+}
+
+
+class com.photostudio.model.PhotoDetails {
+- int quantity
+- String style
++ int getQuantity()
++ String getStyle()
+}
+
+
+class com.photostudio.model.CostCalculator {
++ {static} double calculateCost(PhotoDetails,List<PricingRule>)
+}
+
+class com.photostudio.controller.OrderManager {
+- Order activeOrder
++ void newOrder()
++ boolean isSessionTypeAvailable(String)
++ boolean isSlotAvailable(Date,Time)
++ double getCost(int,String)
++ boolean finalizeOrder()
+}
+
+
+class com.photostudio.model.PricingRule {
+- double multiplier
+- String ruleDescription
++ double getMultiplier()
++ {static} List<PricingRule> getApplicablePricingRules()
+}
+
+
+@enduml

@@ -14,7 +14,7 @@ public class SessionType {
     private String name;
     private double basePrice;
 
-    private SessionType(String id, String name, double basePrice) {
+    public SessionType(String id, String name, double basePrice) {
         this.id = id;
         this.name = name;
         this.basePrice = basePrice;
