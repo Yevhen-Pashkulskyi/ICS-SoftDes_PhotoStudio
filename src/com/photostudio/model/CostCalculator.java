@@ -18,18 +18,27 @@ public class CostCalculator {
      * @return Розрахована вартість.
      */
     public static double calculateCost(PhotoDetails details, List<PricingRule> rules) {
-        // Заглушка: Демонстраційна логіка розрахунку
-        System.out.println("CostCalculator: Calculating cost...");
 
-        // Базова ціна може залежати від кількості фото
-        double baseCost = details.getQuantity() * 10.0; // Припустимо, 10 за фото
+        // (1) Вхід, ініціалізація
+        double baseCost = 0.0;
 
-        // Застосовуємо правила
-        for (PricingRule rule : rules) {
-            baseCost *= rule.getMultiplier();
+        // (2) Предикат #1 (Розгалуження)
+        // Додано для задоволення умов завдання
+        if (details.getQuantity() > 0) {
+
+            // (3) Блок "True"
+            baseCost = details.getQuantity() * 10.0; // 10 за фото
+
+            // (4) Предикат #2 (Цикл)
+            for (PricingRule rule : rules) {
+                // (5) Блок в циклі
+                baseCost *= rule.getMultiplier();
+            }
         }
+        // (Неявний "else" веде до вузла 6)
 
-        System.out.println("CostCalculator: Calculated cost is " + baseCost);
+        // (6) Вузол виходу
         return baseCost;
+        // (7) Кінець
     }
 }

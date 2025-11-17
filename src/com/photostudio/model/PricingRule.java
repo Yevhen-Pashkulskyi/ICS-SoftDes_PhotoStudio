@@ -14,7 +14,7 @@ public class PricingRule {
     private String ruleDescription;
 
     // Приватний конструктор, щоб об'єкти створювались лише "фабричним" методом
-    private PricingRule(String description, double multiplier) {
+    public PricingRule(String description, double multiplier) {
         this.ruleDescription = description;
         this.multiplier = multiplier;
     }

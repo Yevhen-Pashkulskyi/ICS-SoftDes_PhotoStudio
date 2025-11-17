@@ -1,58 +1,24 @@
 package com.photostudio.app;
 
-import com.photostudio.model.Order;
-import com.photostudio.model.SessionType;
+import com.photostudio.model.CostCalculator;
+import com.photostudio.model.PhotoDetails;
+import com.photostudio.model.PricingRule;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Тестовий Драйвер (Test Driver)
- * для виконання тест-кейсу 'TC_WB_Order_01'.
+ * для виконання тест-кейсу 'TC_WB_CostCalculator_01'.
+ *
+ * Цей драйвер НЕ ПОТРЕБУЄ "заглушок" (mocks), оскільки
+ * CostCalculator є stateless і отримує всі залежності
+ * через параметри.
  */
 public class TestDriver {
 
-    // Створюємо "заглушений" список типів сесій (Mock Object)
-    static List<SessionType> mockSessionTypes = new ArrayList<>();
-
-    /**
-     * Це "заглушка" (Stub/Mock) класу Order.
-     * Ми перевизначаємо метод, що тестується, щоб "інжектувати"
-     * наш контрольований список 'mockSessionTypes'
-     * замість виклику реального SessionType.getAvailableSessionTypes().
-     */
-    static class TestableOrder extends Order {
-
-        @Override
-        public boolean isSessionTypeAvailable(String typeName) {
-            // (1) Вхід
-            // (2) Отримання списку.
-            // ЗАМІСТЬ SessionType.getAvailableSessionTypes()
-            // МИ ВИКОРИСТОВУЄМО НАШ MOCK-СПИСОК.
-            List<SessionType> availableTypes = TestDriver.mockSessionTypes;
-
-            // (3) Предикат #1 (for)
-            for (SessionType st : availableTypes) {
-                // (4) Предикат #2 (if)
-                if (st.getName().equalsIgnoreCase(typeName)) {
-                    // (5) "True" блок
-                    // setSessionType(typeName); // Не можемо викликати private, але імітуємо
-                    System.out.println("Order: Session type set to '" + typeName + "'");
-                    // (6) Вихід (true)
-                    return true;
-                }
-            }
-            // (7) Блок після циклу
-            System.out.println("Order: Session type '" + typeName + "' is NOT available.");
-            // (8) Вихід (false)
-            return false;
-            // (9) Кінець
-        }
-    }
-
-
     public static void main(String[] args) {
-        System.out.println("--- Запуск Тест-кейсу 'TC_WB_Order_01' ---");
+        System.out.println("--- Запуск Тест-кейсу 'TC_WB_CostCalculator_01' ---");
         runTestCase();
     }
 
@@ -61,41 +27,40 @@ public class TestDriver {
      */
     public static void runTestCase() {
 
-        TestableOrder order;
-        boolean result;
+        PhotoDetails details;
+        List<PricingRule> rules;
+        double result;
 
         // --- Тестовий Варіант 1 (Шлях 1) ---
-        System.out.println("\n--- Тест 1: Список порожній ---");
-        mockSessionTypes.clear(); // Вхідні дані
-        order = new TestableOrder();
-        result = order.isSessionTypeAvailable("Portrait"); // Дія
-        printResult(result, false); // Перевірка
+        System.out.println("\n--- Тест 1: Кількість <= 0 ---");
+        details = new PhotoDetails(0, "Test"); // 1. Вхідні дані
+        rules = new ArrayList<>();
+        result = CostCalculator.calculateCost(details, rules); // 6. Дія
+        printResult(result, 0.0); // 8. Перевірка
 
         // --- Тестовий Варіант 2 (Шлях 2) ---
-        System.out.println("\n--- Тест 2: Збігів не знайдено ---");
-        mockSessionTypes.clear();
-        mockSessionTypes.add(new SessionType("p1", "Portrait", 100.0)); // Вхідні дані
-        mockSessionTypes.add(new SessionType("f1", "Family", 150.0));
-
-        order = new TestableOrder();
-        result = order.isSessionTypeAvailable("Wedding"); // Дія
-        printResult(result, false); // Перевірка
+        System.out.println("\n--- Тест 2: Кількість > 0, список правил порожній ---");
+        details = new PhotoDetails(10, "Test"); // 1. Вхідні дані
+        rules = new ArrayList<>();
+        result = CostCalculator.calculateCost(details, rules); // 6. Дія
+        printResult(result, 100.0); // 8. Перевірка (10 * 10.0)
 
         // --- Тестовий Варіант 3 (Шлях 3) ---
-        System.out.println("\n--- Тест 3: Збіг знайдено ---");
-        mockSessionTypes.clear();
-        mockSessionTypes.add(new SessionType("p1", "Portrait", 100.0)); // Вхідні дані
-        mockSessionTypes.add(new SessionType("w1", "Wedding", 500.0));
+        System.out.println("\n--- Тест 3: Кількість > 0, список правил НЕ порожній ---");
+        details = new PhotoDetails(10, "Retouch"); // 1. Вхідні дані
+        rules = new ArrayList<>();
+        rules.add(new PricingRule("Retouch", 1.5));
+        rules.add(new PricingRule("Urgent", 2.0));
 
-        order = new TestableOrder();
-        result = order.isSessionTypeAvailable("Wedding"); // Дія
-        printResult(result, true); // Перевірка
+        result = CostCalculator.calculateCost(details, rules); // 6. Дія
+        // (10 * 10.0) * 1.5 * 2.0 = 100.0 * 1.5 * 2.0 = 300.0
+        printResult(result, 300.0); // 8. Перевірка
     }
 
     /**
      * Допоміжний метод для виводу результатів тесту.
      */
-    private static void printResult(boolean actual, boolean expected) {
+    private static void printResult(double actual, double expected) {
         System.out.println("Очікуваний результат: " + expected + ". Фактичний: " + actual);
         if (actual == expected) {
             System.out.println("Статус: PASSED");
